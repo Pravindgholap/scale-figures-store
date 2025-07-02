@@ -29,7 +29,7 @@ SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
 
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'scaleandfigures.render.com'] 
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'scale-figures-store.onrender.com'] 
 
 
 # Application definition
