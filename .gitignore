@@ -1,0 +1,48 @@
+    # Python
+    __pycache__/
+    *.pyc
+    *.pyo
+    *.pyd
+    .Python
+    env/
+    venv/
+    bin/
+    include/
+    lib/
+    lib64/
+    *.env
+    .env
+    
+    # Django
+    *.log
+    *.pot
+    *.mo
+    *.sqlite3
+    db.sqlite3
+    media/ 
+    static_cdn/
+    
+    # IDEs
+    .vscode/                # VS Code
+    
+    # Operating System Files
+    .DS_Store
+    Thumbs.db
+    
+    # Environment Variables & Secrets
+    .env
+    *.env
+    secret_key.txt # If you store SECRET_KEY separately
+    
+    # Render.com specific 
+    .render/
+    
+    # Python build artifacts
+    build/
+    dist/
+    *.egg-info/
+    
+    # Other
+    *~
+    *.swp
+    
