@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block title %}Your Shopping Cart - Scale & Figures Store{% endblock %}
+
+{% block content %}
+    <h1 class="text-4xl font-extrabold text-gray-900 mb-8 text-center">Your Shopping Cart</h1>
+
+    {% if cart_items %}
+        <div class="bg-white rounded-xl shadow-xl overflow-hidden md:max-w-4xl mx-auto my-10">
+            <div class="p-8">
+                <div class="space-y-6">
+                    {% for item in cart_items %}
+                        <div class="flex items-center justify-between border-b pb-4 last:border-b-0 last:pb-0">
+                            <div class="flex items-center space-x-4">
+                                <a href="{{ item.product.get_absolute_url }}" class="flex-shrink-0">
+                                    {% if item.product.image %}
+                                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="w-20 h-20 object-cover rounded-lg shadow-sm">
+                                    {% else %}
+                                        <img src="https://placehold.co/80x80/e2e8f0/64748b?text=No+Image" alt="No image" class="w-20 h-20 object-cover rounded-lg shadow-sm">
+                                    {% endif %}
+                                </a>
+                                <div>
+                                    <h2 class="text-xl font-semibold text-gray-900">
+                                        <a href="{{ item.product.get_absolute_url }}" class="hover:text-blue-700 transition duration-200">
+                                            {{ item.product.name }}
+                                        </a>
+                                    </h2>
+                                    <p class="text-gray-600 text-sm">${{ item.product.price }} per unit</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                {# Form for updating quantity #}
+                                <form action="{% url 'products:cart_update' item.product.id %}" method="post" class="flex items-center space-x-2">
+                                    {% csrf_token %}
+                                    <label for="quantity-{{ item.id }}" class="sr-only">Quantity</label>
+                                    <input type="number" id="quantity-{{ item.id }}" name="quantity" value="{{ item.quantity }}" min="0" max="{{ item.product.stock }}"
+                                           class="w-16 p-2 border border-gray-300 rounded-md text-center text-lg">
+                                    <button type="submit" class="p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-200" title="Update Quantity">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004 15v1m7-11h2m-7 0h4m2 0h2"></path></svg>
+                                    </button>
+                                </form>
+
+                                <div class="text-2xl font-bold text-blue-700">
+                                    ${{ item.total_price }}
+                                </div>
+
+                                {# Form for removing item #}
+                                <form action="{% url 'products:cart_remove' item.product.id %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="text-red-500 hover:text-red-700 transition duration-200 p-2 rounded-md" title="Remove Item">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div class="mt-8 pt-6 border-t border-gray-200 flex justify-end items-baseline space-x-4">
+                    <span class="text-2xl font-semibold text-gray-800">Cart Total:</span>
+                    <span class="text-4xl font-extrabold text-blue-700">${{ total_cart_price }}</span>
+                </div>
+
+                <div class="mt-8 flex justify-end space-x-4">
+                    <a href="{% url 'products:product_list' %}"
+                       class="px-6 py-3 bg-gray-200 text-gray-800 font-semibold rounded-lg shadow-md hover:bg-gray-300 transition duration-300">
+                        Continue Shopping
+                    </a>
+                    <a href="{% url 'products:checkout' %}"
+                        class="px-8 py-3 bg-green-600 text-white font-bold rounded-lg shadow-md hover:bg-green-700 transition duration-300">
+                        Proceed to Checkout
+                    </a>
+
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="bg-white rounded-xl shadow-xl overflow-hidden md:max-w-xl mx-auto my-10 p-8 text-center">
+            <h2 class="text-3xl font-bold text-gray-800 mb-4">Your cart is empty!</h2>
+            <p class="text-lg text-gray-600 mb-6">Looks like you haven't added any scale models or action figures yet.</p>
+            <a href="{% url 'products:product_list' %}"
+               class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition duration-300">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v2"></path></svg>
+                Start Shopping Now!
+            </a>
+        </div>
+    {% endif %}
+{% endblock %}

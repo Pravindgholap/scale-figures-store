@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {% if current_category %}{{ current_category.name }}{% else %}All Products{% endif %} - Scale & Figures Store
+{% endblock %}
+
+{% block content %}
+    <h1 class="text-4xl font-extrabold text-gray-900 mb-8 text-center">
+        {% if current_category %}{{ current_category.name }}{% else %}All Products{% endif %}
+    </h1>
+
+    {# Featured Products Section - Only show if no category is selected and no search query #}
+    {% if not current_category and not search_query and featured_products %}
+        <section class="mb-16">
+            <h2 class="text-3xl font-semibold text-gray-800 mb-8 text-center border-b border-gray-300 pb-3 tracking-tight">Featured Products</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+                {% for product in featured_products %}
+                    <div class="bg-white rounded-2xl shadow-md hover:shadow-xl transition duration-300 transform hover:-translate-y-1 flex flex-col">
+                        <a href="{{ product.get_absolute_url }}" class="h-48 w-full overflow-hidden rounded-t-2xl">
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover transition duration-300 hover:opacity-90">
+                            {% else %}
+                                <img src="https://placehold.co/400x300/e2e8f0/64748b?text=No+Image"
+                                            alt="No image available for {{ product.name }}"
+                                            class="w-full h-full object-cover bg-gray-200 text-sm text-gray-500">
+                            {% endif %}
+                        </a>
+                        <div class="p-6 flex-grow flex flex-col">
+                            <h3 class="text-xl font-medium text-gray-800 mb-2 hover:text-blue-600 transition">
+                                <a href="{{ product.get_absolute_url }}">{{ product.name }}</a>
+                            </h3>
+                            <p class="text-gray-600 text-sm mb-4 flex-grow leading-relaxed">{{ product.description|truncatechars:100 }}</p>
+                            <div class="flex items-center justify-between mt-auto">
+                                <span class="text-2xl font-bold text-blue-700">${{ product.price }}</span>
+                                <span class="text-sm text-gray-500">Stock: {{ product.stock }}</span>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+
+    <div class="flex flex-col md:flex-row gap-10">
+        <!-- Category Sidebar -->
+        <aside class="md:w-1/4 bg-white p-6 rounded-2xl shadow-xl sticky top-24 max-h-[80vh] overflow-y-auto">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4 border-b border-gray-300 pb-2">Categories</h2>
+            <ul class="space-y-3">
+                <li>
+                    <a href="{% url 'products:product_list' %}"
+                    class="block text-lg transition font-medium
+                    {% if not current_category %}
+                        text-blue-800 font-extrabold
+                    {% else %}
+                        text-blue-700 hover:text-blue-900
+                    {% endif %}">
+                        All
+                    </a>
+                </li>
+                {% for category in categories %}
+                    <li>
+                        <a href="{{ category.get_absolute_url }}"
+                        class="block text-lg transition
+                        {% if current_category and current_category.slug == category.slug %}
+                            text-blue-800 font-bold
+                        {% else %}
+                            text-gray-700 hover:text-blue-700
+                        {% endif %}">
+                            {{ category.name }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+
+            {# NEW: Recent Searches Section #}
+            {% if recent_searches %}
+                <h2 class="text-2xl font-semibold text-gray-800 mt-8 mb-4 border-b border-gray-300 pb-2">Recent Searches</h2>
+                <ul class="space-y-3">
+                    {% for query in recent_searches %}
+                        <li>
+                            <a href="{% url 'products:product_list' %}?q={{ query }}"
+                               class="block text-lg text-gray-700 hover:text-blue-700 transition duration-200">
+                                "{{ query }}"
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </aside>
+
+        <!-- Product Grid -->
+        <section class="md:w-3/4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+            {% if current_category or search_query %}
+                <h2 class="col-span-full text-3xl font-semibold text-gray-800 mb-6 border-b border-gray-300 pb-3 tracking-tight">
+                    {% if current_category %}Products in {{ current_category.name }}{% elif search_query %}Search Results for "{{ search_query }}"{% endif %}
+                </h2>
+            {% endif %}
+
+            {% for product in products %}
+                <div class="bg-white rounded-2xl shadow-md hover:shadow-xl transition duration-300 transform hover:-translate-y-1 flex flex-col">
+                    <a href="{{ product.get_absolute_url }}" class="h-48 w-full overflow-hidden rounded-t-2xl">
+                        {% if product.image %}
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover transition hover:opacity-90 duration-300">
+                        {% else %}
+                            <img src="https://placehold.co/400x300/e2e8f0/64748b?text=No+Image"
+                                        alt="No image available for {{ product.name }}"
+                                        class="w-full h-full object-cover bg-gray-200 text-sm text-gray-500">
+                        {% endif %}
+                    </a>
+                    <div class="p-6 flex-grow flex flex-col">
+                        <h3 class="text-xl font-medium text-gray-800 mb-2 hover:text-blue-600 transition">
+                            <a href="{{ product.get_absolute_url }}">{{ product.name }}</a>
+                        </h3>
+                        <p class="text-gray-600 text-sm mb-4 flex-grow leading-relaxed">{{ product.description|truncatechars:100 }}</p>
+                        <div class="flex items-center justify-between mt-auto">
+                            <span class="text-2xl font-bold text-blue-700">${{ product.price }}</span>
+                            <span class="text-sm text-gray-500">Stock: {{ product.stock }}</span>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <p class="col-span-full text-center text-lg text-gray-500">No products found for your selection.</p>
+            {% endfor %}
+        </section>
+    </div>
+{% endblock %}

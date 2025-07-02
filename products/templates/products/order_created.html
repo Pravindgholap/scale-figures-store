@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Order Placed! - Scale & Figures Store{% endblock %}
+
+{% block content %}
+    <div class="bg-white rounded-xl shadow-xl overflow-hidden md:max-w-xl mx-auto my-10 p-8 text-center">
+        <svg class="w-24 h-24 mx-auto text-green-500 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <h1 class="text-4xl font-extrabold text-gray-900 mb-4">Order Placed Successfully!</h1>
+        <p class="text-lg text-gray-600 mb-6">Thank you for your purchase. Your order #<span class="font-bold">{{ order.id }}</span> has been received and is being processed.</p>
+        
+        <div class="mt-8 flex justify-center space-x-4">
+            <a href="{% url 'products:product_list' %}"
+               class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition duration-300">
+                Continue Shopping
+            </a>
+            {# Optional: Link to user's order history page later #}
+            {# <a href="{% url 'accounts:order_history' %}" #}
+            {#    class="inline-flex items-center px-6 py-3 bg-gray-200 text-gray-800 font-semibold rounded-lg shadow-md hover:bg-gray-300 transition duration-300"> #}
+            {#     View My Orders #}
+            {# </a> #}
+        </div>
+    </div>
+{% endblock %}

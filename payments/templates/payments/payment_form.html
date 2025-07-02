@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block title %}Complete Payment - Scale & Figures Store{% endblock %}
+
+{% block content %}
+    <h1 class="text-4xl font-extrabold text-gray-900 mb-8 text-center">Complete Your Payment</h1>
+
+    <div class="bg-white rounded-2xl shadow-2xl overflow-hidden md:max-w-2xl mx-auto my-10 p-8 border border-gray-100 animate-fade-in">
+        
+        <!-- Order Summary -->
+        <section class="mb-10">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 0a2 2 0 002-2V6a2 2 0 00-2-2H7a2 2 0 00-2 2v8a2 2 0 002 2h10z" />
+                </svg>
+                Order Summary
+            </h2>
+            <div class="space-y-4 text-gray-700">
+                <div class="flex justify-between">
+                    <span>Order ID:</span>
+                    <span class="font-semibold text-gray-900">#{{ order.id }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>Shipping To:</span>
+                    <span class="font-semibold text-gray-900">{{ order.first_name }} {{ order.last_name }} ({{ order.city }})</span>
+                </div>
+                <div class="flex justify-between border-t pt-4 text-2xl font-bold text-gray-900">
+                    <span>Total:</span>
+                    <span>${{ order.get_total_cost }}</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Payment Method -->
+        <section class="mb-10">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a4 4 0 00-8 0v2m12 0v10a2 2 0 01-2 2H7a2 2 0 01-2-2V9m12 0H5" />
+                </svg>
+                Payment Method
+            </h2>
+            <div class="bg-blue-50 p-6 rounded-xl border border-blue-200 text-blue-800 text-center">
+                <p class="font-semibold text-lg mb-2">Simulated Card Payment</p>
+                <p class="text-sm">This is a test gateway. No real card details are needed.</p>
+            </div>
+        </section>
+
+        <!-- Confirm Button -->
+        <form method="post" action="{% url 'payments:payment' %}">
+            {% csrf_token %}
+            <button type="submit"
+                class="w-full px-8 py-4 bg-green-600 text-white text-xl font-bold rounded-lg shadow-lg
+                       hover:bg-green-700 transition duration-300 ease-in-out transform hover:scale-105 active:scale-95
+                       focus:outline-none focus:ring-4 focus:ring-green-300">
+                Confirm Payment
+            </button>
+        </form>
+
+        <!-- Back to Checkout -->
+        <div class="mt-6 text-center">
+            <a href="{% url 'products:checkout' %}" class="text-blue-600 hover:text-blue-800 font-semibold inline-flex items-center gap-1 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+                Back to Shipping Details
+            </a>
+        </div>
+    </div>
+{% endblock %}

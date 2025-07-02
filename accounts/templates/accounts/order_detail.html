@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %}Order #{{ order.id }} Details - Scale & Figures Store{% endblock %}
+
+{% block content %}
+    <h1 class="text-4xl font-extrabold text-gray-900 mb-8 text-center">Order Details</h1>
+
+    <div class="bg-white rounded-xl shadow-xl overflow-hidden md:max-w-4xl mx-auto my-10 p-8">
+        <h2 class="text-3xl font-bold text-gray-800 mb-6 border-b pb-4">Order #{{ order.id }}</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-3">Order Information</h3>
+                <p class="text-gray-700"><strong>Date:</strong> {{ order.created|date:"F d, Y H:i" }}</p>
+                <p class="text-gray-700"><strong>Status:</strong> {% if order.paid %}Paid{% else %}Pending Payment{% endif %}</p>
+                <p class="text-gray-700"><strong>Total:</strong> ${{ order.get_total_cost }}</p>
+            </div>
+            <div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-3">Shipping Address</h3>
+                <p class="text-gray-700">{{ order.first_name }} {{ order.last_name }}</p>
+                <p class="text-gray-700">{{ order.address }}</p>
+                <p class="text-gray-700">{{ order.city }}, {{ order.postal_code }}</p>
+                <p class="text-gray-700">Email: {{ order.email }}</p>
+            </div>
+        </div>
+
+        <h3 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Items in this Order</h3>
+        <div class="space-y-4">
+            {% for item in order_items %}
+                <div class="flex items-center justify-between border-b pb-3 last:border-b-0 last:pb-0">
+                    <div class="flex items-center space-x-4">
+                        <a href="{{ item.product.get_absolute_url }}" class="flex-shrink-0">
+                            {% if item.product.image %}
+                                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="w-16 h-16 object-cover rounded-lg shadow-sm">
+                            {% else %}
+                                <img src="https://placehold.co/64x64/e2e8f0/64748b?text=No+Image" alt="No image" class="w-16 h-16 object-cover rounded-lg shadow-sm">
+                            {% endif %}
+                        </a>
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-900">
+                                <a href="{{ item.product.get_absolute_url }}" class="hover:text-blue-700 transition duration-200">
+                                    {{ item.product.name }}
+                                </a>
+                            </h4>
+                            <p class="text-gray-600 text-sm">${{ item.price }} per unit</p>
+                        </div>
+                    </div>
+                    <div class="text-lg text-gray-800">
+                        Quantity: <span class="font-bold">{{ item.quantity }}</span>
+                    </div>
+                    <div class="text-xl font-bold text-blue-700">
+                        ${{ item.get_cost }}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="mt-8 pt-6 border-t border-gray-200 flex justify-end items-baseline space-x-4">
+            <span class="text-2xl font-semibold text-gray-800">Order Total:</span>
+            <span class="text-4xl font-extrabold text-blue-700">${{ order.get_total_cost }}</span>
+        </div>
+
+        <div class="mt-8 flex justify-end space-x-4">
+            <a href="{% url 'accounts:order_history' %}"
+               class="px-6 py-3 bg-gray-200 text-gray-800 font-semibold rounded-lg shadow-md hover:bg-gray-300 transition duration-300">
+                Back to Orders
+            </a>
+            <a href="{% url 'products:product_list' %}"
+               class="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition duration-300">
+                Continue Shopping
+            </a>
+        </div>
+    </div>
+{% endblock %}

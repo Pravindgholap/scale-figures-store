@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ product.name }} - Scale & Figures Store{% endblock %}
+
+{% block content %}
+    <div class="bg-white rounded-xl shadow-xl overflow-hidden md:flex md:max-w-4xl mx-auto my-10">
+        <!-- Product Image Section -->
+        <div class="md:flex-shrink-0 md:w-1/2 p-6 flex items-center justify-center bg-gray-100">
+            {% if product.image %}
+                <img class="max-w-full h-auto rounded-lg shadow-md"
+                     src="{{ product.image.url }}"
+                     alt="{{ product.name }}">
+            {% else %}
+                <img class="max-w-full h-auto rounded-lg shadow-md bg-gray-200 flex items-center justify-center text-gray-500 text-sm"
+                     src="https://placehold.co/600x600/e2e8f0/64748b?text=No+Image"
+                     alt="No image available for {{ product.name }}">
+            {% endif %}
+        </div>
+
+        <!-- Product Details Section -->
+        <div class="p-8 md:w-1/2">
+            <div class="uppercase tracking-wide text-sm text-indigo-600 font-semibold mb-2">
+                {% if product.category %}{{ product.category.name }}{% else %}Uncategorized{% endif %}
+            </div>
+            <h1 class="block mt-1 text-4xl leading-tight font-extrabold text-gray-900">
+                {{ product.name }}
+            </h1>
+            <p class="mt-4 text-gray-600 leading-relaxed text-lg">
+                {{ product.description|linebreaksbr }} 
+            </p>
+
+            <div class="mt-6 flex items-baseline justify-between">
+                <span class="text-5xl font-extrabold text-blue-700">${{ product.price }}</span>
+                {% if product.stock > 0 and product.available %}
+                    <span class="ml-3 px-3 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded-full">In Stock ({{ product.stock }} left)</span>
+                {% else %}
+                    <span class="ml-3 px-3 py-1 bg-red-200 text-red-800 text-xs font-semibold rounded-full">Out of Stock</span>
+                {% endif %}
+            </div>
+
+            <div class="mt-8 flex items-center space-x-4">
+                {# NEW: Form for adding to cart #}
+                <form action="{% url 'products:cart_add' product.id %}" method="post" class="flex items-center space-x-4 w-full">
+                    {% csrf_token %} {# IMPORTANT: CSRF token for security #}
+                    <label for="quantity" class="text-gray-700 font-medium">Quantity:</label>
+                    <input type="number" id="quantity" name="quantity" value="1" min="1" max="{% if product.stock > 0 %}{{ product.stock }}{% else %}1{% endif %}"
+                           class="w-20 p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 text-lg text-center">
+                    <button type="submit"
+                            {% if not product.available or product.stock == 0 %}disabled{% endif %}
+                            class="flex-1 px-8 py-4 bg-blue-600 text-white text-xl font-bold rounded-lg shadow-lg
+                                   hover:bg-blue-700 transition duration-300 ease-in-out transform hover:scale-105 active:scale-95
+                                   focus:outline-none focus:ring-4 focus:ring-blue-300
+                                   {% if not product.available or product.stock == 0 %}opacity-50 cursor-not-allowed{% endif %}">
+                        Add to Cart
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

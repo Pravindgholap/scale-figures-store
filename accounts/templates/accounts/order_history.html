@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}My Orders - Scale & Figures Store{% endblock %}
+
+{% block content %}
+    <h1 class="text-4xl font-extrabold text-gray-900 mb-8 text-center">My Orders</h1>
+
+    {% if orders %}
+        <div class="bg-white rounded-xl shadow-xl overflow-hidden md:max-w-4xl mx-auto my-10">
+            <div class="p-8">
+                <div class="space-y-6">
+                    {% for order in orders %}
+                        <div class="flex flex-col md:flex-row items-start md:items-center justify-between border-b pb-4 last:border-b-0 last:pb-0">
+                            <div class="mb-4 md:mb-0">
+                                <h2 class="text-xl font-semibold text-gray-900">Order #{{ order.id }}</h2>
+                                <p class="text-gray-600 text-sm">Placed on: {{ order.created|date:"F d, Y H:i" }}</p>
+                                <p class="text-gray-600 text-sm">Status: {% if order.paid %}Paid{% else %}Pending Payment{% endif %}</p>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <span class="text-2xl font-bold text-blue-700">${{ order.get_total_cost }}</span>
+                                <a href="{% url 'accounts:order_detail' order.id %}" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-200">
+                                    View Details
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="bg-white rounded-xl shadow-xl overflow-hidden md:max-w-xl mx-auto my-10 p-8 text-center">
+            <h2 class="text-3xl font-bold text-gray-800 mb-4">You haven't placed any orders yet!</h2>
+            <p class="text-lg text-gray-600 mb-6">Start shopping now to build your collection.</p>
+            <a href="{% url 'products:product_list' %}"
+               class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition duration-300">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v2"></path></svg>
+                Shop Now!
+            </a>
+        </div>
+    {% endif %}
+{% endblock %}
