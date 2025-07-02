@@ -17,7 +17,7 @@
                                 <p class="text-gray-600 text-sm">Status: {% if order.paid %}Paid{% else %}Pending Payment{% endif %}</p>
                             </div>
                             <div class="flex items-center space-x-4">
-                                <span class="text-2xl font-bold text-blue-700">${{ order.get_total_cost }}</span>
+                                <span class="text-2xl font-bold text-blue-700">₹{{ order.get_total_cost }}</span>
                                 <a href="{% url 'accounts:order_detail' order.id %}" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-200">
                                     View Details
                                 </a>

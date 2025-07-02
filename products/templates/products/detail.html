@@ -30,7 +30,7 @@
             </p>
 
             <div class="mt-6 flex items-baseline justify-between">
-                <span class="text-5xl font-extrabold text-blue-700">${{ product.price }}</span>
+                <span class="text-5xl font-extrabold text-blue-700">₹{{ product.price }}</span>
                 {% if product.stock > 0 and product.available %}
                     <span class="ml-3 px-3 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded-full">In Stock ({{ product.stock }} left)</span>
                 {% else %}
