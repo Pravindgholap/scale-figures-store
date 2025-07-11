@@ -12,8 +12,9 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
-import dj_database_url 
+import dj_database_url
 from decouple import config
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -22,14 +23,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# Use environment variable for SECRET_KEY in production
 SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'scale-figures-store.onrender.com'] 
+# Ensure this matches your Render URL
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '.render.com', 'scale-figures-store.onrender.com']
 
 
 # Application definition
@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'core',
     'payments',
     'whitenoise.runserver_nostatic', 
+    'storages', # IMPORTANT: Added django-storages to INSTALLED_APPS
 ]
 
 LOGIN_REDIRECT_URL = '/' 
@@ -53,7 +54,7 @@ LOGOUT_REDIRECT_URL = '/'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware', 
+    'whitenoise.middleware.WhiteNoiseMiddleware', # WhiteNoise middleware for static files
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -67,7 +68,7 @@ ROOT_URLCONF = 'ecommerce_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'], 
+        'DIRS': [BASE_DIR / 'templates'], # Ensure your global templates directory is here
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -84,20 +85,15 @@ WSGI_APPLICATION = 'ecommerce_project.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
-# Use dj_database_url to parse DATABASE_URL from environment
 DATABASES = {
     'default': dj_database_url.config(
-        default=config('DATABASE_URL', default='sqlite:///db.sqlite3'), # Default to SQLite for local
-        conn_max_age=600 # Keep database connections open for up to 10 minutes
+        default=config('DATABASE_URL', default='sqlite:///db.sqlite3'),
+        conn_max_age=600
     )
 }
 
 
 # Password validation
-# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -115,8 +111,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 # Internationalization
-# https://docs.djangoproject.com/en/5.2/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
@@ -127,27 +121,34 @@ USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
-
 STATIC_URL = 'static/'
-# Directory where Django will collect all static files for production
 STATIC_ROOT = BASE_DIR / 'staticfiles' 
 
-# Additional locations where static files can be found
 STATICFILES_DIRS = [
     BASE_DIR / 'static', # Your app's static files (e.g., global CSS/JS)
 ]
 
-# WhiteNoise settings for serving static files efficiently
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
 # Media files (for user-uploaded content like product images)
-MEDIA_URL = '/media/' 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media') 
+# IMPORTANT: AWS S3 Configuration for Media Files
+AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME')
+AWS_S3_REGION_NAME = config('AWS_S3_REGION_NAME', default='us-east-1') # Ensure this matches your S3 bucket's region (e.g., 'eu-north-1')
+AWS_S3_FILE_OVERWRITE = False
+AWS_DEFAULT_ACL = None 
+AWS_S3_VERIFY = True 
+AWS_QUERYSTRING_AUTH = False 
+
+# Use S3 for default file storage
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    
+# Construct MEDIA_URL to point to your S3 bucket
+MEDIA_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media') # This path is now less critical as files go to S3
 
 
 # Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
