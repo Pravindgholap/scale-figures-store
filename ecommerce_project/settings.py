@@ -124,31 +124,29 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles' 
 
-STATICFILES_DIRS = [
-    BASE_DIR / 'static', # Your app's static files (e.g., global CSS/JS)
-]
+
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
 # Media files (for user-uploaded content like product images)
 # IMPORTANT: AWS S3 Configuration for Media Files
+
+
 AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
 AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME')
-AWS_S3_REGION_NAME = config('AWS_S3_REGION_NAME', default='us-east-1') # Ensure this matches your S3 bucket's region (e.g., 'eu-north-1')
-AWS_S3_FILE_OVERWRITE = False
-AWS_DEFAULT_ACL = 'public-read'
-AWS_S3_VERIFY = True 
-AWS_QUERYSTRING_AUTH = False 
+AWS_S3_REGION_NAME = config('AWS_S3_REGION_NAME')
 
-# Use S3 for default file storage
+AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com'
+AWS_DEFAULT_ACL = 'public-read'
+AWS_S3_FILE_OVERWRITE = False
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-    
-# Construct MEDIA_URL to point to your S3 bucket
-MEDIA_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media') # This path is now less critical as files go to S3
+MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/'
+
+
 
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+print("Active File Storage:", DEFAULT_FILE_STORAGE)
